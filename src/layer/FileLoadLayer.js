@@ -187,74 +187,7 @@ let FileLoaderLayer = GeoJSON.extend({
 
 });
 
-let FileLoadControl = Control.extend({
-  statics: {
-    TITLE: 'Load local file (GPX, KML, GeoJSON)',
-    LABEL: '&#8965;'
-  },
-  options: {
-    position: 'topleft',
-    fitBounds: true,
-    fileSizeLimit: 1024
-  },
-
-  initialize: function (options) {
-    Util.setOptions(this, options);
-    this.loader = null;
-  },
-
-  onAdd: function (map) {
-    this.loader = new FileLoaderLayer(map, this.options);
-    this.loader.on(FileLoaderEvent.loaded, function (layer) {
-      if (this.options.fitBounds) {
-        window.setTimeout(function () {
-          map.fitBounds(layer.getBounds());
-        }, 500);
-      }
-    }, this);
-
-    // Initialize Drag-and-drop
-    this._initDragAndDrop(map);
-
-    // Initialize map control
-    return this.initContainer();
-  },
-
-  _initDragAndDrop: function (map) {
-    let callbackName;
-    let thisLoader = this.loader;
-    const dropbox = map._container;
-
-    const callbacks = {
-      dragenter: function () {
-        map.scrollWheelZoom.disable();
-      },
-      dragleave: function () {
-        map.scrollWheelZoom.enable();
-      },
-      dragover: function (e) {
-        e.stopPropagation();
-        e.preventDefault();
-      },
-      drop: function (e) {
-        e.stopPropagation();
-        e.preventDefault();
-        thisLoader.loadMultiple(e.dataTransfer.files);
-        map.scrollWheelZoom.enable();
-      }
-    };
-    for (callbackName in callbacks) {
-      if (callbacks.hasOwnProperty(callbackName)) {
-        dropbox.addEventListener(callbackName, callbacks[callbackName], false);
-      }
-    }
-  },
-
-  initContainer: function () {
-    return null
-  }
-});
 
 export {
-  FileLoaderLayer, FileLoadControl
+  FileLoaderLayer
 }
