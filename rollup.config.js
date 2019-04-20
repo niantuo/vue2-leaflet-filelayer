@@ -10,15 +10,13 @@ import fs from 'fs';
 const baseFolder = './src/';
 const componentFolder = 'components/';
 const mixinFolder = 'mixins/';
-const layerFolder ='layer/';
-const scriptFolder ='scripts/';
+const layerFolder = 'layer/';
 
 const components = fs.readdirSync(baseFolder + componentFolder);
 const mixins = fs.readdirSync(baseFolder + mixinFolder);
-const layers =fs.readdirSync(baseFolder+layerFolder);
-const scripts =fs.readdirSync(baseFolder+scriptFolder);
+const layers = fs.readdirSync(baseFolder + layerFolder);
 
-const externalList=['vue', 'leaflet','vue2-leaflet','uuid','togeojson'];
+const externalList = ['vue', 'leaflet', 'vue2-leaflet', 'uuid', 'togeojson'];
 
 const mapEntry = (f, ext, folder) => ({
   input: baseFolder + folder + f,
@@ -28,7 +26,7 @@ const mapEntry = (f, ext, folder) => ({
     file: `dist/${folder}${f.replace(ext, 'js')}`
   },
   plugins: [
-    replace({ 'process.env.NODE_ENV': 'production' }),
+    replace({'process.env.NODE_ENV': 'production'}),
     node({
       extensions: ['.vue', '.js']
     }),
@@ -46,8 +44,7 @@ const mapEntry = (f, ext, folder) => ({
 export default [
   ...components.map(f => mapEntry(f, 'vue', componentFolder)),
   ...mixins.map(f => mapEntry(f, 'js', mixinFolder)),
-  ...layers.map(f=>mapEntry(f,'js',layerFolder)),
-  ...scripts.map(f=>mapEntry(f,'js',scriptFolder)),
+  ...layers.map(f => mapEntry(f, 'js', layerFolder)),
   {
     input: 'src/index.js',
     external: ['vue', 'leaflet'],
@@ -56,7 +53,7 @@ export default [
       file: 'dist/vue2-leaflet-filelayer.cjs.js'
     }],
     plugins: [
-      replace({ 'process.env.NODE_ENV': 'production' }),
+      replace({'process.env.NODE_ENV': 'production'}),
       node({
         extensions: ['.vue', '.js']
       }),
@@ -69,8 +66,9 @@ export default [
         objectAssign: true
       }),
       copy({
-        'src/index.js': 'dist/vue2-leaflet-filelayer.es.js'
-      })
+        'src/scripts/shp.js': 'dist/shp.js',
+        'src/index.js':'dist/vue2-leaflet-filelayer.es.js'
+      }),
     ]
   },
   {
@@ -86,7 +84,7 @@ export default [
       }
     },
     plugins: [
-      replace({ 'process.env.NODE_ENV': 'production' }),
+      replace({'process.env.NODE_ENV': 'production'}),
       node({
         extensions: ['.vue', '.js']
       }),
