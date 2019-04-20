@@ -191,6 +191,9 @@
       this.ready = true;
       this.$emit('ready', this.featureGroup);
     },
+    beforeDestroy(){
+      this.clearAll();
+    },
     created() {
 
     }
