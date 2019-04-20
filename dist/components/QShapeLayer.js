@@ -18190,8 +18190,6 @@ exports.inflateUndermine = inflateUndermine;
  * 文件的文件名可以是.shp ,.zip
  **/
 
-console.log('shp=>',shp);
-
 var ShapeOptions = {
   error: {
     type: '不支持该格式的文件！'
