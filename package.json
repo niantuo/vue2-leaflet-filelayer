@@ -1,6 +1,6 @@
 {
   "name": "vue2-leaflet-filelayer",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Leaflet Vue加载GIS 文件",
   "author": "niantuo <976056042@qq.com>",
   "private": true,

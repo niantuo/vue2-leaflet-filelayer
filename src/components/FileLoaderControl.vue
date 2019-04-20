@@ -79,7 +79,6 @@
         featureGroup: new FeatureGroup(),
         lMap: undefined,
         layerIdMap: {},
-        layerIds: []
       }
     },
     methods: {
@@ -118,7 +117,7 @@
         DomEvent.on(layer, ShapeEvent.error, this.onLoadError.bind(this));
         DomEvent.on(layer, ShapeEvent.loading, this.onLoading.bind(this));
         this.layerIdMap[layer.id] = layer;
-        this.layerIds = this.layerIds.concat([layer.id]);
+        this.$emit('update:layers', this.layerIdMap);
         if (this.addToMap) this.featureGroup.addLayer(layer);
       },
       loadNormalFile(file, ext) {
@@ -131,7 +130,7 @@
         DomEvent.on(layer, FileLoaderError.error, this.onLoadError.bind(this));
         DomEvent.on(layer, FileLoaderError.loading, this.onLoading.bind(this));
         this.layerIdMap[layer.id] = layer;
-        this.layerIds = this.layerIds.concat([layer.id]);
+        this.$emit('update:layers', this.layerIdMap);
         if (this.addToMap) this.featureGroup.addLayer(layer);
         layer.load(file, ext)
       },
@@ -157,16 +156,10 @@
       clearAll() {
         this.featureGroup.clearLayers();
         this.layerIdMap = {};
-        this.layerIds = [];
       },
       removeLayer(layer) {
         layer && layer.remove();
         delete this.layerIdMap[layer.id]
-      }
-    },
-    watch: {
-      layerIds() {
-        this.$emit('update:layers', this.layerIdMap)
       }
     },
     mounted() {

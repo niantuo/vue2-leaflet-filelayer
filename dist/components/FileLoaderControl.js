@@ -18565,7 +18565,6 @@ var script = {
       featureGroup: new FeatureGroup(),
       lMap: undefined,
       layerIdMap: {},
-      layerIds: []
     }
   },
   methods: {
@@ -18604,7 +18603,7 @@ var script = {
       DomEvent.on(layer, ShapeEvent.error, this.onLoadError.bind(this));
       DomEvent.on(layer, ShapeEvent.loading, this.onLoading.bind(this));
       this.layerIdMap[layer.id] = layer;
-      this.layerIds = this.layerIds.concat([layer.id]);
+      this.$emit('update:layers', this.layerIdMap);
       if (this.addToMap) { this.featureGroup.addLayer(layer); }
     },
     loadNormalFile: function loadNormalFile(file, ext) {
@@ -18615,7 +18614,7 @@ var script = {
       DomEvent.on(layer, FileLoaderEvent.error, this.onLoadError.bind(this));
       DomEvent.on(layer, FileLoaderEvent.loading, this.onLoading.bind(this));
       this.layerIdMap[layer.id] = layer;
-      this.layerIds = this.layerIds.concat([layer.id]);
+      this.$emit('update:layers', this.layerIdMap);
       if (this.addToMap) { this.featureGroup.addLayer(layer); }
       layer.load(file, ext);
     },
@@ -18641,16 +18640,10 @@ var script = {
     clearAll: function clearAll() {
       this.featureGroup.clearLayers();
       this.layerIdMap = {};
-      this.layerIds = [];
     },
     removeLayer: function removeLayer(layer) {
       layer && layer.remove();
       delete this.layerIdMap[layer.id];
-    }
-  },
-  watch: {
-    layerIds: function layerIds() {
-      this.$emit('update:layers', this.layerIdMap);
     }
   },
   mounted: function mounted() {
@@ -18830,11 +18823,11 @@ var __vue_staticRenderFns__ = [];
   /* style */
   var __vue_inject_styles__ = function (inject) {
     if (!inject) { return }
-    inject("data-v-0638a057_0", { source: ".file-loader-control[data-v-0638a057]{position:relative}.file-loader-button[data-v-0638a057]{font-size:10px}", map: undefined, media: undefined });
+    inject("data-v-0776b3d3_0", { source: ".file-loader-control[data-v-0776b3d3]{position:relative}.file-loader-button[data-v-0776b3d3]{font-size:10px}", map: undefined, media: undefined });
 
   };
   /* scoped */
-  var __vue_scope_id__ = "data-v-0638a057";
+  var __vue_scope_id__ = "data-v-0776b3d3";
   /* module identifier */
   var __vue_module_identifier__ = undefined;
   /* functional template */
