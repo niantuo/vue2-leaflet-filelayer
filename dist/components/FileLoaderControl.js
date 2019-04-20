@@ -18824,17 +18824,17 @@ var browser = createInjector;
 var __vue_script__ = script;
 
 /* template */
-var __vue_render__ = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"file-loader-control"},[(_vm.showControl)?_c('div',{staticClass:"leaflet-control-zoom leaflet-bar"},[_c('a',{staticClass:"leaflet-control-zoom-in file-loader-button",attrs:{"title":_vm.title,"role":"button","href":"#"},on:{"click":function($event){$event.stopPropagation();return _vm.handleSelect($event)}}},[_vm._v(_vm._s(_vm.label))]),_vm._v(" "),_c('a',{staticClass:"leaflet-control-zoom-out file-loader-button",attrs:{"title":_vm.title,"role":"button","href":"#"},on:{"click":function($event){$event.stopPropagation();return _vm.clearAll($event)}}},[_vm._v("清除")]),_vm._v(" "),_c('input',{ref:"input",attrs:{"type":"file","accept":_vm.accepts,"hidden":""},on:{"change":_vm.loadFile,"input":_vm.onInputFile}})]):_vm._e(),_vm._v(" "),_vm._t("default")],2)};
+var __vue_render__ = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"file-loader-control"},[_c('input',{ref:"input",attrs:{"type":"file","accept":_vm.accepts,"hidden":""},on:{"change":_vm.loadFile,"input":_vm.onInputFile}}),_vm._v(" "),(_vm.showControl)?_c('div',{staticClass:"leaflet-control-zoom leaflet-bar"},[_c('a',{staticClass:"leaflet-control-zoom-in file-loader-button",attrs:{"title":_vm.title,"role":"button","href":"#"},on:{"click":function($event){$event.stopPropagation();return _vm.handleSelect($event)}}},[_vm._v(_vm._s(_vm.label))]),_vm._v(" "),_c('a',{staticClass:"leaflet-control-zoom-out file-loader-button",attrs:{"title":_vm.title,"role":"button","href":"#"},on:{"click":function($event){$event.stopPropagation();return _vm.clearAll($event)}}},[_vm._v("清除")])]):_vm._e(),_vm._v(" "),_vm._t("default")],2)};
 var __vue_staticRenderFns__ = [];
 
   /* style */
   var __vue_inject_styles__ = function (inject) {
     if (!inject) { return }
-    inject("data-v-be420cda_0", { source: ".file-loader-control[data-v-be420cda]{position:relative}.file-loader-button[data-v-be420cda]{font-size:10px}", map: undefined, media: undefined });
+    inject("data-v-115d8d53_0", { source: ".file-loader-control[data-v-115d8d53]{position:relative}.file-loader-button[data-v-115d8d53]{font-size:10px}", map: undefined, media: undefined });
 
   };
   /* scoped */
-  var __vue_scope_id__ = "data-v-be420cda";
+  var __vue_scope_id__ = "data-v-115d8d53";
   /* module identifier */
   var __vue_module_identifier__ = undefined;
   /* functional template */

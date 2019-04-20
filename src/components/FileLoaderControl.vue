@@ -1,14 +1,13 @@
 <template>
   <div class="file-loader-control">
+    <input ref="input" @change="loadFile" @input="onInputFile" type="file" :accept="accepts" hidden>
     <div v-if="showControl" class="leaflet-control-zoom leaflet-bar">
       <a :title="title" class="leaflet-control-zoom-in file-loader-button" role="button"
          href="#" @click.stop="handleSelect">{{label}}</a>
       <a :title="title" class="leaflet-control-zoom-out file-loader-button" role="button"
          href="#" @click.stop="clearAll">清除</a>
-      <input ref="input" @change="loadFile" @input="onInputFile" type="file" :accept="accepts" hidden>
     </div>
     <slot></slot>
-
   </div>
 </template>
 <script>
