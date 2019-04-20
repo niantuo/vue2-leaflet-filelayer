@@ -11,15 +11,18 @@ const baseFolder = './src/';
 const componentFolder = 'components/';
 const mixinFolder = 'mixins/';
 const layerFolder ='layer/';
+const scriptFolder ='scripts/';
 
 const components = fs.readdirSync(baseFolder + componentFolder);
 const mixins = fs.readdirSync(baseFolder + mixinFolder);
 const layers =fs.readdirSync(baseFolder+layerFolder);
-const externalList=['vue', 'leaflet','togeojson','uuid','vue2-leaflet'];
+const scripts =fs.readdirSync(baseFolder+scriptFolder);
+
+const externalList=['vue', 'leaflet','vue2-leaflet','uuid','togeojson'];
 
 const mapEntry = (f, ext, folder) => ({
   input: baseFolder + folder + f,
-  external: ['vue', 'leaflet','togeojson','uuid','vue2-leaflet'],
+  external: externalList,
   output: {
     format: 'esm',
     file: `dist/${folder}${f.replace(ext, 'js')}`
@@ -44,6 +47,7 @@ export default [
   ...components.map(f => mapEntry(f, 'vue', componentFolder)),
   ...mixins.map(f => mapEntry(f, 'js', mixinFolder)),
   ...layers.map(f=>mapEntry(f,'js',layerFolder)),
+  ...scripts.map(f=>mapEntry(f,'js',scriptFolder)),
   {
     input: 'src/index.js',
     external: ['vue', 'leaflet'],
@@ -78,7 +82,7 @@ export default [
       file: 'dist/vue2-leaflet-filelayer.min.js',
       globals: {
         vue: 'Vue',
-        'leaflet': 'L'
+        'leaflet': 'L',
       }
     },
     plugins: [

@@ -7,7 +7,6 @@
  * 文件的文件名可以是.shp ,.zip
  **/
 import {GeoJSON, Util} from 'leaflet'
-import '../scripts/shp'
 import uuid from 'uuid'
 
 export let ShapeOptions = {

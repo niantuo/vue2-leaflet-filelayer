@@ -3,6 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import './styles/index.css'
+import './scripts/shp'
 
 Vue.config.productionTip = false;
 
