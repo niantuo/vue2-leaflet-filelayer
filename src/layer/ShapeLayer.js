@@ -8,6 +8,9 @@
  **/
 import {GeoJSON, Util} from 'leaflet'
 import uuid from 'uuid'
+import shp from '../../static/js/shp'
+
+console.log('shp=>',shp);
 
 export let ShapeOptions = {
   error: {

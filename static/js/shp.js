@@ -1,4 +1,8 @@
+var exports = module.exports;
+
 (function (f) {
+
+  console.log('export ',typeof exports,'  ',module)
   if (typeof exports === "object" && typeof module !== "undefined") {
     module.exports = f()
   } else if (typeof define === "function" && define.amd) {
@@ -18131,3 +18135,5 @@ exports.inflateUndermine = inflateUndermine;
     }]
   }, {}, [133])(133)
 });
+
+

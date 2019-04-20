@@ -50,7 +50,7 @@ export default [
     external: ['vue', 'leaflet'],
     output: [{
       format: 'cjs',
-      file: 'dist/vue2-leaflet-filelayer.cjs.js'
+      file: 'dist/index.cjs.js'
     }],
     plugins: [
       replace({'process.env.NODE_ENV': 'production'}),
@@ -66,8 +66,7 @@ export default [
         objectAssign: true
       }),
       copy({
-        'src/scripts/shp.js': 'dist/shp.js',
-        'src/index.js':'dist/vue2-leaflet-filelayer.es.js'
+        'src/index.js':'dist/index.js'
       }),
     ]
   },
@@ -77,7 +76,7 @@ export default [
     output: {
       format: 'umd',
       name: 'Vue2LeafletFilelayer',
-      file: 'dist/vue2-leaflet-filelayer.min.js',
+      file: 'dist/index.min.js',
       globals: {
         vue: 'Vue',
         'leaflet': 'L',
