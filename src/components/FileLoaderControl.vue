@@ -66,9 +66,9 @@
         default: '.gpx,.kml,.json,.geojson,.shp,.zip'
       },
       layers: {
-        type: Array,
+        type: Object,
         default() {
-          return [];
+          return {};
         }
       }
     },

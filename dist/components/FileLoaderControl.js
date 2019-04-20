@@ -18552,9 +18552,9 @@ var script = {
       default: '.gpx,.kml,.json,.geojson,.shp,.zip'
     },
     layers: {
-      type: Array,
+      type: Object,
       default: function default$2() {
-        return [];
+        return {};
       }
     }
   },
@@ -18830,11 +18830,11 @@ var __vue_staticRenderFns__ = [];
   /* style */
   var __vue_inject_styles__ = function (inject) {
     if (!inject) { return }
-    inject("data-v-115d8d53_0", { source: ".file-loader-control[data-v-115d8d53]{position:relative}.file-loader-button[data-v-115d8d53]{font-size:10px}", map: undefined, media: undefined });
+    inject("data-v-0638a057_0", { source: ".file-loader-control[data-v-0638a057]{position:relative}.file-loader-button[data-v-0638a057]{font-size:10px}", map: undefined, media: undefined });
 
   };
   /* scoped */
-  var __vue_scope_id__ = "data-v-115d8d53";
+  var __vue_scope_id__ = "data-v-0638a057";
   /* module identifier */
   var __vue_module_identifier__ = undefined;
   /* functional template */
