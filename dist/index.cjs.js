@@ -2925,26 +2925,10 @@ var FileLoaderLayer = leaflet.GeoJSON.extend({
 
 });
 
-var shp = createCommonjsModule(function (module) {
-var exports = module.exports;
-
+var shp = createCommonjsModule(function (module, exports) {
 (function (f) {
-
-  console.log('export ',typeof exports,'  ',module);
-  if (typeof exports === "object" && 'object' !== "undefined") {
+  {
     module.exports = f();
-  } else {
-    var g;
-    if (typeof window !== "undefined") {
-      g = window;
-    } else if (typeof commonjsGlobal !== "undefined") {
-      g = commonjsGlobal;
-    } else if (typeof self !== "undefined") {
-      g = self;
-    } else {
-      g = this;
-    }
-    g.shp = f();
   }
 })(function () {
   return (function e(t, n, r) {
