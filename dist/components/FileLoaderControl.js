@@ -1,6 +1,7 @@
-import { setOptions, GeoJSON, Util, FeatureGroup, DomEvent, Control as Control$1 } from 'leaflet';
+import { setOptions, GeoJSON, Util, LatLng, FeatureGroup, DomEvent, Control as Control$1 } from 'leaflet';
 import toGeoJSON from 'togeojson';
 import uuid from 'uuid';
+import proj4 from 'proj4';
 
 var Options = {
   props: {
@@ -227,14 +228,14 @@ var FileLoaderLayer = GeoJSON.extend({
       this.fire(FileLoaderEvent.loaded, this);
     } catch (err) {
       console.log('loadData ', err);
-      this.fire(FileLoaderEvent.error, err, this);
+      this._fireEvent(FileLoaderEvent.error, err ? err.message ? err.message : '加载失败！' : '加载失败！');
     }
   },
 
   _isParameterMissing: function (v, vname) {
     if (typeof v === 'undefined') {
       console.log('_isParameterMissing: ', vname);
-      this.fire(FileLoaderEvent.error, new Error(this.options.error.parameter), this);
+      this._fireEvent(FileLoaderEvent.error, this.options.error.parameter);
       return true;
     }
     return false;
@@ -246,7 +247,7 @@ var FileLoaderLayer = GeoJSON.extend({
     parser = this._parsers[ext];
     if (!parser) {
       console.log('unsupport type : ', ext);
-      this.fire(FileLoaderEvent.error, new Error(this.options.error.type), this);
+      this._fireEvent(FileLoaderEvent.error, this.options.error.type);
       return undefined;
     }
     return {
@@ -261,7 +262,7 @@ var FileLoaderLayer = GeoJSON.extend({
       console.log('_isFileSizeOk: ', 'File size exceeds limit (' +
         fileSize + ' > ' +
         this.options.fileSizeLimit + 'kb)');
-      this.fire(FileLoaderEvent.error, new Error(this.options.error.fileSize), this);
+      this._fireEvent(FileLoaderEvent.error, this.options.error.fileSize);
       return false;
     }
     return true;
@@ -286,8 +287,11 @@ var FileLoaderLayer = GeoJSON.extend({
     }
     geojson = toGeoJSON[format](content);
     return this._loadGeoJSON(geojson);
-  }
+  },
 
+  _fireEvent: function _fireEvent(type, errMsg) {
+    this.fire(type, {message: errMsg, layer: this});
+  }
 });
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
@@ -18371,6 +18375,28 @@ exports.inflateUndermine = inflateUndermine;
 /**
  * @author  tuonina
  * @email  976056042@qq.com
+ * @createTime  2019/5/5
+ *
+ **/
+
+proj4.defs("EPSG:2343", "+proj=tmerc +lat_0=0 +lon_0=105 +k=1 +x_0=500000 +y_0=0 +a=6378140 +b=6356755.288157528 +units=m +no_defs");
+
+
+/**
+ * 自定义的一些坐标系
+ */
+var CRS_DEFS = {
+  EPSG234: 'EPSG:2343',
+  WGS84: 'WGS84'
+};
+
+function transform2(from, to, point) {
+  return proj4(from, to, point)
+}
+
+/**
+ * @author  tuonina
+ * @email  976056042@qq.com
  * @createTime  2019/4/19
  * 传进来的参数，既可以是 文件，即加载本地对象
  * 如果参数为 function ，方法，即返回数据的格式为{data:data,ext:ext,filename}
@@ -18382,7 +18408,9 @@ var ShapeOptions = {
     type: '不支持该格式的文件！'
   },
   ext: undefined,
-  params: undefined
+  params: undefined,
+  originCRS: CRS_DEFS.WGS84,
+  crs: CRS_DEFS.WGS84
 
 };
 
@@ -18403,8 +18431,11 @@ var ShapeLayer = GeoJSON.extend({
 
   initialize: function (file, options) {
     this.id = uuid();
+    if (options.originCRS !== options.crs) {
+      options.coordsToLatLng = this._coordsToLatLng.bind(this);
+    }
     Util.setOptions(this, options);
-    if (options&&options.file) {
+    if (options && options.file) {
       this.fileInfo = Object.assign({}, options.file);
     }
     GeoJSON.prototype.initialize.call(this, {
@@ -18415,7 +18446,17 @@ var ShapeLayer = GeoJSON.extend({
     }
   },
 
+  _coordsToLatLng: function _coordsToLatLng(coords) {
+    var ref = this.options;
+    var originCRS = ref.originCRS;
+    var crs = ref.crs;
+    var point = transform2(originCRS, crs, coords);
+    return new LatLng(point[1], point[0]);
+  },
+
   addFileData: function (file) {
+    var this$1 = this;
+
     if (!file) {
       console.log('addFileData file is null !');
       this.clearLayers();
@@ -18436,7 +18477,7 @@ var ShapeLayer = GeoJSON.extend({
         })
         .catch(function (e) {
           console.log('ShapeLayer error ', e);
-          self.fire(ShapeEvent.error, e, self);
+          this$1._fireError(e ? e.message ? e.message : '加载数据失败！' : '加载数据失败！');
         });
     } else if (typeof file === 'object') {
       this.loadLocalFile(file);
@@ -18446,10 +18487,10 @@ var ShapeLayer = GeoJSON.extend({
         self.fire(ShapeEvent.loaded, self);
       }).catch(function (e) {
         console.log('shp load error ', e);
-        self.fire(ShapeEvent.error, e, self);
+        this$1._fireError(e ? e.message ? e.message : '加载数据失败！' : '加载数据失败！');
       });
     } else {
-      self.fire(ShapeEvent.error, {message: error.type}, self);
+      this._fireError(error.type);
       console.log('ShapeLayer error addFileData 2', error);
     }
   },
@@ -18466,7 +18507,7 @@ var ShapeLayer = GeoJSON.extend({
         self.fire(ShapeEvent.loaded, self);
       } catch (e) {
         console.log('ShapeLayer fileReader ', e);
-        self.fire(ShapeEvent.error, e, self);
+        this._fireError(e ? e.message ? e.message : '加载数据失败！' : '加载数据失败！');
       }
     });
     fileReader.readAsArrayBuffer(file);
@@ -18499,8 +18540,10 @@ var ShapeLayer = GeoJSON.extend({
       i++;
     }
     return out;
+  },
+  _fireError: function _fireError(message) {
+    this.fire(ShapeEvent.error, {message: message});
   }
-
 });
 
 //
@@ -18592,10 +18635,10 @@ var script = {
       }
     },
     loadShpFile: function loadShpFile(file, ext) {
-      var layer = new ShapeLayer(file);
-      DomEvent.on(layer, ShapeEvent.loaded, this.onLoaded.bind(this));
-      DomEvent.on(layer, ShapeEvent.error, this.onLoadError.bind(this));
-      DomEvent.on(layer, ShapeEvent.loading, this.onLoading.bind(this));
+      var layer = new ShapeLayer(file,this.layerOptions);
+      DomEvent.on(layer, ShapeEvent.loaded, this.onLoaded.bind(this, layer));
+      DomEvent.on(layer, ShapeEvent.error, this.onLoadError.bind(this, layer));
+      DomEvent.on(layer, ShapeEvent.loading, this.onLoading.bind(this, layer));
       this.layerIdMap[layer.id] = layer;
       this.$emit('change', this.layerIdMap);
       if (this.addToMap) { this.featureGroup.addLayer(layer); }
@@ -18603,16 +18646,16 @@ var script = {
     loadNormalFile: function loadNormalFile(file, ext) {
       var options = Object.assign({}, this.layerOptions,
         {fileSizeLimit: this.fileSizeLimit});
-      var layer = new FileLoaderLayer(this.lMap, options);
-      DomEvent.on(layer, FileLoaderEvent.loaded, this.onLoaded.bind(this));
-      DomEvent.on(layer, FileLoaderEvent.error, this.onLoadError.bind(this));
-      DomEvent.on(layer, FileLoaderEvent.loading, this.onLoading.bind(this));
+      var layer = new FileLoaderLayer(options);
+      DomEvent.on(layer, FileLoaderEvent.loaded, this.onLoaded.bind(this, layer));
+      DomEvent.on(layer, FileLoaderEvent.error, this.onLoadError.bind(this, layer));
+      DomEvent.on(layer, FileLoaderEvent.loading, this.onLoading.bind(this, layer));
       this.layerIdMap[layer.id] = layer;
       this.$emit('change', this.layerIdMap);
       if (this.addToMap) { this.featureGroup.addLayer(layer); }
       layer.load(file, ext);
     },
-    onLoadError: function onLoadError(ev, layer) {
+    onLoadError: function onLoadError(layer, ev) {
       this.$emit('error', ev, layer);
     },
     onLoaded: function onLoaded(layer) {
@@ -18667,7 +18710,7 @@ var script = {
     this.ready = true;
     this.$emit('ready', this.featureGroup);
   },
-  beforeDestroy: function beforeDestroy(){
+  beforeDestroy: function beforeDestroy() {
     this.clearAll();
   },
   created: function created() {
@@ -18820,11 +18863,11 @@ var __vue_staticRenderFns__ = [];
   /* style */
   var __vue_inject_styles__ = function (inject) {
     if (!inject) { return }
-    inject("data-v-cb0a0196_0", { source: ".file-loader-control[data-v-cb0a0196]{position:relative}.file-loader-button[data-v-cb0a0196]{font-size:10px}", map: undefined, media: undefined });
+    inject("data-v-259b07fa_0", { source: ".file-loader-control[data-v-259b07fa]{position:relative}.file-loader-button[data-v-259b07fa]{font-size:10px}", map: undefined, media: undefined });
 
   };
   /* scoped */
-  var __vue_scope_id__ = "data-v-cb0a0196";
+  var __vue_scope_id__ = "data-v-259b07fa";
   /* module identifier */
   var __vue_module_identifier__ = undefined;
   /* functional template */

@@ -106,7 +106,7 @@
         }
       },
       loadShpFile(file, ext) {
-        let layer = new ShapeLayer(file);
+        let layer = new ShapeLayer(file,this.layerOptions);
         DomEvent.on(layer, ShapeEvent.loaded, this.onLoaded.bind(this, layer));
         DomEvent.on(layer, ShapeEvent.error, this.onLoadError.bind(this, layer));
         DomEvent.on(layer, ShapeEvent.loading, this.onLoading.bind(this, layer));

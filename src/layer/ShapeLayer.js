@@ -6,16 +6,19 @@
  * 如果参数为 function ，方法，即返回数据的格式为{data:data,ext:ext,filename}
  * 文件的文件名可以是.shp ,.zip
  **/
-import {GeoJSON, Util} from 'leaflet'
+import {GeoJSON, LatLng, Util} from 'leaflet'
 import uuid from 'uuid'
 import shp from '../../static/js/shp'
+import {CRS_DEFS, transform2} from "../crs/TransformUtils";
 
 export let ShapeOptions = {
   error: {
     type: '不支持该格式的文件！'
   },
   ext: undefined,
-  params: undefined
+  params: undefined,
+  originCRS: CRS_DEFS.WGS84,
+  crs: CRS_DEFS.WGS84
 
 };
 
@@ -38,8 +41,11 @@ export default GeoJSON.extend({
 
   initialize: function (file, options) {
     this.id = uuid();
+    if (options.originCRS !== options.crs) {
+      options.coordsToLatLng = this._coordsToLatLng.bind(this);
+    }
     Util.setOptions(this, options);
-    if (options&&options.file) {
+    if (options && options.file) {
       this.fileInfo = {...options.file};
     }
     GeoJSON.prototype.initialize.call(this, {
@@ -48,6 +54,12 @@ export default GeoJSON.extend({
     if (file) {
       this.addFileData(file);
     }
+  },
+
+  _coordsToLatLng(coords) {
+    let {originCRS, crs} = this.options;
+    let point = transform2(originCRS, crs, coords);
+    return new LatLng(point[1], point[0]);
   },
 
   addFileData: function (file) {
@@ -67,7 +79,7 @@ export default GeoJSON.extend({
         })
         .catch(e => {
           console.log('ShapeLayer error ', e);
-          this._fireError(e?e.message?e.message:'加载数据失败！':'加载数据失败！');
+          this._fireError(e ? e.message ? e.message : '加载数据失败！' : '加载数据失败！');
         })
     } else if (typeof file === 'object') {
       this.loadLocalFile(file)
@@ -77,7 +89,7 @@ export default GeoJSON.extend({
         self.fire(ShapeEvent.loaded, self)
       }).catch(e => {
         console.log('shp load error ', e);
-        this._fireError(e?e.message?e.message:'加载数据失败！':'加载数据失败！');
+        this._fireError(e ? e.message ? e.message : '加载数据失败！' : '加载数据失败！');
       })
     } else {
       this._fireError(error.type);
@@ -97,7 +109,7 @@ export default GeoJSON.extend({
         self.fire(ShapeEvent.loaded, self);
       } catch (e) {
         console.log('ShapeLayer fileReader ', e);
-        this._fireError(e?e.message?e.message:'加载数据失败！':'加载数据失败！')
+        this._fireError(e ? e.message ? e.message : '加载数据失败！' : '加载数据失败！')
       }
     });
     fileReader.readAsArrayBuffer(file);
@@ -131,7 +143,7 @@ export default GeoJSON.extend({
     }
     return out;
   },
-  _fireError(message){
-    this.fire(ShapeEvent.error,{message})
+  _fireError(message) {
+    this.fire(ShapeEvent.error, {message})
   }
 })

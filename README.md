@@ -19,3 +19,8 @@ npm run build --report
 ```
 
 For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+
+
+### 国内坐标系
+国内一些数据采用的是： EPSG:2343 Xian 1980 / Gauss-Kruger CM 105E
+然而我并不知道怎么转换

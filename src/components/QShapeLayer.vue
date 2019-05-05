@@ -10,6 +10,7 @@
   import {findRealParent} from 'vue2-leaflet/dist/utils/utils'
   import ShapeLayer, {ShapeEvent, ShapeOptions} from '../layer/ShapeLayer'
   import {DomEvent} from 'leaflet'
+  import {CRS_DEFS} from "../crs/TransformUtils";
 
   export default {
     name: "QShapeLayer",
@@ -54,6 +55,14 @@
       name: {
         type: String,
         default: "QShape"
+      },
+      originCRS: {
+        type: String,
+        default: CRS_DEFS.WGS84
+      },
+      crs: {
+        type: String,
+        default: CRS_DEFS.WGS84,
       }
     },
     methods: {
@@ -64,7 +73,9 @@
           error: this.error,
           ext: this.ext,
           params: this.params,
-          name: this.name
+          name: this.name,
+          originCRS: this.originCRS,
+          crs: this.crs
         };
         this.mapObject = new ShapeLayer(this.file, options);
         DomEvent.on(this.mapObject, ShapeEvent.error, this.onLoadError.bind(this));

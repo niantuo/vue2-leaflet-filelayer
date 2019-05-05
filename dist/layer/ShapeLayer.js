@@ -1,5 +1,6 @@
-import { GeoJSON, Util } from 'leaflet';
+import { GeoJSON, Util, LatLng } from 'leaflet';
 import uuid from 'uuid';
+import proj4 from 'proj4';
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
@@ -18082,6 +18083,28 @@ exports.inflateUndermine = inflateUndermine;
 /**
  * @author  tuonina
  * @email  976056042@qq.com
+ * @createTime  2019/5/5
+ *
+ **/
+
+proj4.defs("EPSG:2343", "+proj=tmerc +lat_0=0 +lon_0=105 +k=1 +x_0=500000 +y_0=0 +a=6378140 +b=6356755.288157528 +units=m +no_defs");
+
+
+/**
+ * 自定义的一些坐标系
+ */
+var CRS_DEFS = {
+  EPSG234: 'EPSG:2343',
+  WGS84: 'WGS84'
+};
+
+function transform2(from, to, point) {
+  return proj4(from, to, point)
+}
+
+/**
+ * @author  tuonina
+ * @email  976056042@qq.com
  * @createTime  2019/4/19
  * 传进来的参数，既可以是 文件，即加载本地对象
  * 如果参数为 function ，方法，即返回数据的格式为{data:data,ext:ext,filename}
@@ -18093,7 +18116,9 @@ var ShapeOptions = {
     type: '不支持该格式的文件！'
   },
   ext: undefined,
-  params: undefined
+  params: undefined,
+  originCRS: CRS_DEFS.WGS84,
+  crs: CRS_DEFS.WGS84
 
 };
 
@@ -18114,8 +18139,11 @@ var ShapeLayer = GeoJSON.extend({
 
   initialize: function (file, options) {
     this.id = uuid();
+    if (options.originCRS !== options.crs) {
+      options.coordsToLatLng = this._coordsToLatLng.bind(this);
+    }
     Util.setOptions(this, options);
-    if (options&&options.file) {
+    if (options && options.file) {
       this.fileInfo = Object.assign({}, options.file);
     }
     GeoJSON.prototype.initialize.call(this, {
@@ -18126,7 +18154,17 @@ var ShapeLayer = GeoJSON.extend({
     }
   },
 
+  _coordsToLatLng: function _coordsToLatLng(coords) {
+    var ref = this.options;
+    var originCRS = ref.originCRS;
+    var crs = ref.crs;
+    var point = transform2(originCRS, crs, coords);
+    return new LatLng(point[1], point[0]);
+  },
+
   addFileData: function (file) {
+    var this$1 = this;
+
     if (!file) {
       console.log('addFileData file is null !');
       this.clearLayers();
@@ -18147,7 +18185,7 @@ var ShapeLayer = GeoJSON.extend({
         })
         .catch(function (e) {
           console.log('ShapeLayer error ', e);
-          self.fire(ShapeEvent.error, e, self);
+          this$1._fireError(e ? e.message ? e.message : '加载数据失败！' : '加载数据失败！');
         });
     } else if (typeof file === 'object') {
       this.loadLocalFile(file);
@@ -18157,10 +18195,10 @@ var ShapeLayer = GeoJSON.extend({
         self.fire(ShapeEvent.loaded, self);
       }).catch(function (e) {
         console.log('shp load error ', e);
-        self.fire(ShapeEvent.error, e, self);
+        this$1._fireError(e ? e.message ? e.message : '加载数据失败！' : '加载数据失败！');
       });
     } else {
-      self.fire(ShapeEvent.error, {message: error.type}, self);
+      this._fireError(error.type);
       console.log('ShapeLayer error addFileData 2', error);
     }
   },
@@ -18177,7 +18215,7 @@ var ShapeLayer = GeoJSON.extend({
         self.fire(ShapeEvent.loaded, self);
       } catch (e) {
         console.log('ShapeLayer fileReader ', e);
-        self.fire(ShapeEvent.error, e, self);
+        this._fireError(e ? e.message ? e.message : '加载数据失败！' : '加载数据失败！');
       }
     });
     fileReader.readAsArrayBuffer(file);
@@ -18210,8 +18248,10 @@ var ShapeLayer = GeoJSON.extend({
       i++;
     }
     return out;
+  },
+  _fireError: function _fireError(message) {
+    this.fire(ShapeEvent.error, {message: message});
   }
-
 });
 
 export default ShapeLayer;

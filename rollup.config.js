@@ -11,12 +11,14 @@ const baseFolder = './src/';
 const componentFolder = 'components/';
 const mixinFolder = 'mixins/';
 const layerFolder = 'layer/';
+const crsFolder = 'crs/';
 
 const components = fs.readdirSync(baseFolder + componentFolder);
 const mixins = fs.readdirSync(baseFolder + mixinFolder);
 const layers = fs.readdirSync(baseFolder + layerFolder);
+const crs =fs.readdirSync(baseFolder+crsFolder);
 
-const externalList = ['vue', 'leaflet', 'vue2-leaflet', 'uuid', 'togeojson'];
+const externalList = ['vue', 'leaflet', 'vue2-leaflet', 'uuid', 'togeojson','proj4'];
 
 const mapEntry = (f, ext, folder) => ({
   input: baseFolder + folder + f,
@@ -45,9 +47,10 @@ export default [
   ...components.map(f => mapEntry(f, 'vue', componentFolder)),
   ...mixins.map(f => mapEntry(f, 'js', mixinFolder)),
   ...layers.map(f => mapEntry(f, 'js', layerFolder)),
+  ...crs.map(f=>mapEntry(f,'js',crsFolder)),
   {
     input: 'src/index.js',
-    external: ['vue', 'leaflet'],
+    external: externalList,
     output: [{
       format: 'cjs',
       file: 'dist/index.cjs.js'
