@@ -67,7 +67,7 @@ export default GeoJSON.extend({
         })
         .catch(e => {
           console.log('ShapeLayer error ', e);
-          self.fire(ShapeEvent.error, e, self)
+          this._fireError(e?e.message?e.message:'加载数据失败！':'加载数据失败！');
         })
     } else if (typeof file === 'object') {
       this.loadLocalFile(file)
@@ -77,10 +77,10 @@ export default GeoJSON.extend({
         self.fire(ShapeEvent.loaded, self)
       }).catch(e => {
         console.log('shp load error ', e);
-        self.fire(ShapeEvent.error, e, self)
+        this._fireError(e?e.message?e.message:'加载数据失败！':'加载数据失败！');
       })
     } else {
-      self.fire(ShapeEvent.error, {message: error.type}, self);
+      this._fireError(error.type);
       console.log('ShapeLayer error addFileData 2', error);
     }
   },
@@ -97,7 +97,7 @@ export default GeoJSON.extend({
         self.fire(ShapeEvent.loaded, self);
       } catch (e) {
         console.log('ShapeLayer fileReader ', e);
-        self.fire(ShapeEvent.error, e, self);
+        this._fireError(e?e.message?e.message:'加载数据失败！':'加载数据失败！')
       }
     });
     fileReader.readAsArrayBuffer(file);
@@ -130,6 +130,8 @@ export default GeoJSON.extend({
       i++;
     }
     return out;
+  },
+  _fireError(message){
+    this.fire(ShapeEvent.error,{message})
   }
-
 })

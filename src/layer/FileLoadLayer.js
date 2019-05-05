@@ -4,7 +4,7 @@
  * @createTime  2019/4/19
  *
  **/
-import {Control, GeoJSON, Util} from 'leaflet'
+import {GeoJSON, Util} from 'leaflet'
 import toGeoJSON from 'togeojson'
 import uuid from 'uuid'
 
@@ -124,14 +124,14 @@ let FileLoaderLayer = GeoJSON.extend({
       this.fire(FileLoaderEvent.loaded, this);
     } catch (err) {
       console.log('loadData ', err);
-      this.fire(FileLoaderEvent.error, err, this);
+      this._fireEvent(FileLoaderEvent.error, err ? err.message ? err.message : '加载失败！' : '加载失败！')
     }
   },
 
   _isParameterMissing: function (v, vname) {
     if (typeof v === 'undefined') {
       console.log('_isParameterMissing: ', vname);
-      this.fire(FileLoaderEvent.error, new Error(this.options.error.parameter), this);
+      this._fireEvent(FileLoaderEvent.error, this.options.error.parameter);
       return true;
     }
     return false;
@@ -143,7 +143,7 @@ let FileLoaderLayer = GeoJSON.extend({
     parser = this._parsers[ext];
     if (!parser) {
       console.log('unsupport type : ', ext);
-      this.fire(FileLoaderEvent.error, new Error(this.options.error.type), this);
+      this._fireEvent(FileLoaderEvent.error, this.options.error.type);
       return undefined;
     }
     return {
@@ -158,7 +158,7 @@ let FileLoaderLayer = GeoJSON.extend({
       console.log('_isFileSizeOk: ', 'File size exceeds limit (' +
         fileSize + ' > ' +
         this.options.fileSizeLimit + 'kb)');
-      this.fire(FileLoaderEvent.error, new Error(this.options.error.fileSize), this);
+      this._fireEvent(FileLoaderEvent.error, this.options.error.fileSize);
       return false;
     }
     return true;
@@ -183,8 +183,11 @@ let FileLoaderLayer = GeoJSON.extend({
     }
     geojson = toGeoJSON[format](content);
     return this._loadGeoJSON(geojson);
-  }
+  },
 
+  _fireEvent(type, errMsg) {
+    this.fire(type, {message: errMsg, layer: this});
+  }
 });
 
 

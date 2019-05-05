@@ -107,9 +107,9 @@
       },
       loadShpFile(file, ext) {
         let layer = new ShapeLayer(file);
-        DomEvent.on(layer, ShapeEvent.loaded, this.onLoaded.bind(this));
-        DomEvent.on(layer, ShapeEvent.error, this.onLoadError.bind(this));
-        DomEvent.on(layer, ShapeEvent.loading, this.onLoading.bind(this));
+        DomEvent.on(layer, ShapeEvent.loaded, this.onLoaded.bind(this, layer));
+        DomEvent.on(layer, ShapeEvent.error, this.onLoadError.bind(this, layer));
+        DomEvent.on(layer, ShapeEvent.loading, this.onLoading.bind(this, layer));
         this.layerIdMap[layer.id] = layer;
         this.$emit('change', this.layerIdMap);
         if (this.addToMap) this.featureGroup.addLayer(layer);
@@ -119,16 +119,16 @@
           ...this.layerOptions,
           fileSizeLimit: this.fileSizeLimit
         };
-        let layer = new FileLoaderLayer(this.lMap, options);
-        DomEvent.on(layer, FileLoaderError.loaded, this.onLoaded.bind(this));
-        DomEvent.on(layer, FileLoaderError.error, this.onLoadError.bind(this));
-        DomEvent.on(layer, FileLoaderError.loading, this.onLoading.bind(this));
+        let layer = new FileLoaderLayer(options);
+        DomEvent.on(layer, FileLoaderError.loaded, this.onLoaded.bind(this, layer));
+        DomEvent.on(layer, FileLoaderError.error, this.onLoadError.bind(this, layer));
+        DomEvent.on(layer, FileLoaderError.loading, this.onLoading.bind(this, layer));
         this.layerIdMap[layer.id] = layer;
         this.$emit('change', this.layerIdMap);
         if (this.addToMap) this.featureGroup.addLayer(layer);
         layer.load(file, ext)
       },
-      onLoadError(ev, layer) {
+      onLoadError(layer, ev) {
         this.$emit('error', ev, layer)
       },
       onLoaded(layer) {
@@ -185,7 +185,7 @@
       this.ready = true;
       this.$emit('ready', this.featureGroup);
     },
-    beforeDestroy(){
+    beforeDestroy() {
       this.clearAll();
     },
     created() {
