@@ -1,6 +1,68 @@
-import { GeoJSON, Util } from 'leaflet';
+import { GeoJSON, LatLng, Util } from 'leaflet';
 import toGeoJSON from 'togeojson';
 import uuid from 'uuid';
+import proj4 from 'proj4';
+
+/**
+ * @author  tuonina
+ * @email  976056042@qq.com
+ * @createTime  2019/5/5
+ *
+ **/
+
+
+/**
+ * 自定义的一些坐标系
+ */
+var CRS_DEFS = {
+  EPSG234: 'EPSG:2343',
+  EPSG4544: 'EPSG:4544',
+  WGS84: 'WGS84'
+};
+proj4.defs(CRS_DEFS.EPSG234, "+proj=tmerc +lat_0=0 +lon_0=105 +k=1 +x_0=500000 +y_0=0 +a=6378140 +b=6356755.288157528 +units=m +no_defs");
+proj4.defs(CRS_DEFS.EPSG4544, '+proj=tmerc +lat_0=0 +lon_0=105 +k=1 +x_0=500000 +y_0=0 +ellps=GRS80 +units=m +no_defs ');
+
+function transform2(from, to, point) {
+  return proj4(from, to, point)
+}
+
+/**
+ * @author  tuonina
+ * @email  976056042@qq.com
+ * @createTime  2019/5/6
+ *
+ **/
+
+var TransformGeoJSON = GeoJSON.extend({
+  options: {
+    crs: CRS_DEFS.WGS84,
+    fromCRS:CRS_DEFS.WGS84
+  },
+  _coordsToLatLng: function _coordsToLatLng(fromCRS, toCRS, coords) {
+    var point = transform2(fromCRS, toCRS, coords);
+    return new LatLng(point[1], point[0]);
+  },
+
+  _initTransform: function _initTransform(options) {
+    console.log('_initTransform=>',options);
+    var originCRS = options.originCRS;
+    var crs = options.crs;
+    if (originCRS !== crs) {
+      options.coordsToLatLng = this._coordsToLatLng.bind(this,originCRS, crs);
+    } else {
+      delete options.coordsToLatLng;
+    }
+  },
+  _addGeoData: function _addGeoData(data) {
+    var crs = data.crs;
+    if (crs) {
+      var propName = crs.type;
+      this.options.fromCRS = crs.properties[propName];
+      this._initTransform(this.options);
+    }
+    this.addData(data);
+  },
+});
 
 /**
  * @author  tuonina
@@ -23,15 +85,18 @@ var FileLoaderEvent = {
   loaded: 'data:loaded'
 };
 
-var FileLoaderLayer = GeoJSON.extend({
+var FileLoaderLayer = TransformGeoJSON.extend({
   options: {
     fileSizeLimit: 1024,
     error: FileLoaderError
   },
   fileInfo: {filename: undefined, format: undefined},
+
   initialize: function (options) {
     this.id = uuid();
     Util.setOptions(this, options);
+    this._initTransform(this.options);
+
     this._parsers = {
       geojson: this._loadGeoJSON,
       json: this._loadGeoJSON,
@@ -169,8 +234,7 @@ var FileLoaderLayer = GeoJSON.extend({
     if (typeof content === 'string') {
       content = JSON.parse(content);
     }
-    this.addData(content);
-
+    this._addGeoData(content);
     if (this.getLayers().length === 0) {
       throw new Error(this.options.error.noLayers);
     }
@@ -189,6 +253,7 @@ var FileLoaderLayer = GeoJSON.extend({
   _fireEvent: function _fireEvent(type, errMsg) {
     this.fire(type, {message: errMsg, layer: this});
   }
+
 });
 
 export { FileLoaderError, FileLoaderEvent, FileLoaderLayer };

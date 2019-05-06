@@ -1,4 +1,4 @@
-import { GeoJSON, Util, LatLng } from 'leaflet';
+import { GeoJSON, LatLng, Util } from 'leaflet';
 import uuid from 'uuid';
 import proj4 from 'proj4';
 
@@ -18087,20 +18087,59 @@ exports.inflateUndermine = inflateUndermine;
  *
  **/
 
-proj4.defs("EPSG:2343", "+proj=tmerc +lat_0=0 +lon_0=105 +k=1 +x_0=500000 +y_0=0 +a=6378140 +b=6356755.288157528 +units=m +no_defs");
-
 
 /**
  * 自定义的一些坐标系
  */
 var CRS_DEFS = {
   EPSG234: 'EPSG:2343',
+  EPSG4544: 'EPSG:4544',
   WGS84: 'WGS84'
 };
+proj4.defs(CRS_DEFS.EPSG234, "+proj=tmerc +lat_0=0 +lon_0=105 +k=1 +x_0=500000 +y_0=0 +a=6378140 +b=6356755.288157528 +units=m +no_defs");
+proj4.defs(CRS_DEFS.EPSG4544, '+proj=tmerc +lat_0=0 +lon_0=105 +k=1 +x_0=500000 +y_0=0 +ellps=GRS80 +units=m +no_defs ');
 
 function transform2(from, to, point) {
   return proj4(from, to, point)
 }
+
+/**
+ * @author  tuonina
+ * @email  976056042@qq.com
+ * @createTime  2019/5/6
+ *
+ **/
+
+var TransformGeoJSON = GeoJSON.extend({
+  options: {
+    crs: CRS_DEFS.WGS84,
+    fromCRS:CRS_DEFS.WGS84
+  },
+  _coordsToLatLng: function _coordsToLatLng(fromCRS, toCRS, coords) {
+    var point = transform2(fromCRS, toCRS, coords);
+    return new LatLng(point[1], point[0]);
+  },
+
+  _initTransform: function _initTransform(options) {
+    console.log('_initTransform=>',options);
+    var originCRS = options.originCRS;
+    var crs = options.crs;
+    if (originCRS !== crs) {
+      options.coordsToLatLng = this._coordsToLatLng.bind(this,originCRS, crs);
+    } else {
+      delete options.coordsToLatLng;
+    }
+  },
+  _addGeoData: function _addGeoData(data) {
+    var crs = data.crs;
+    if (crs) {
+      var propName = crs.type;
+      this.options.fromCRS = crs.properties[propName];
+      this._initTransform(this.options);
+    }
+    this.addData(data);
+  },
+});
 
 /**
  * @author  tuonina
@@ -18129,7 +18168,7 @@ var ShapeEvent = {
 };
 
 
-var ShapeLayer = GeoJSON.extend({
+var ShapeLayer = TransformGeoJSON.extend({
 
   options: Object.assign({}, ShapeOptions,
     {ext: undefined,
@@ -18139,13 +18178,11 @@ var ShapeLayer = GeoJSON.extend({
 
   initialize: function (file, options) {
     this.id = uuid();
-    if (options.originCRS !== options.crs) {
-      options.coordsToLatLng = this._coordsToLatLng.bind(this);
-    }
     Util.setOptions(this, options);
     if (options && options.file) {
       this.fileInfo = Object.assign({}, options.file);
     }
+    this._initTransform(this.options);
     GeoJSON.prototype.initialize.call(this, {
       features: []
     }, this.options);
@@ -18191,7 +18228,7 @@ var ShapeLayer = GeoJSON.extend({
       this.loadLocalFile(file);
     } else if (typeof file === 'string') {
       shp(file).then(function (data) {
-        self.addData(data);
+        self._addGeoData(data);
         self.fire(ShapeEvent.loaded, self);
       }).catch(function (e) {
         console.log('shp load error ', e);
@@ -18224,10 +18261,10 @@ var ShapeLayer = GeoJSON.extend({
     var error = this.options.error;
     switch (ext) {
       case 'shp':
-        this.addData(this._loadShpByteArray(shp.parseShp(buffer)));
+        this._addGeoData(this._loadShpByteArray(shp.parseShp(buffer)));
         break;
       case 'zip':
-        this.addData(shp.parseZip(buffer));
+        this._addGeoData(shp.parseZip(buffer));
         break;
       default:
         throw new Error(error.type);
@@ -18251,7 +18288,7 @@ var ShapeLayer = GeoJSON.extend({
   },
   _fireError: function _fireError(message) {
     this.fire(ShapeEvent.error, {message: message});
-  }
+  },
 });
 
 export default ShapeLayer;
