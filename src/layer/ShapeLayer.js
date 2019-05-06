@@ -10,6 +10,7 @@ import {GeoJSON, LatLng, Util} from 'leaflet'
 import uuid from 'uuid'
 import shp from '../../static/js/shp'
 import {CRS_DEFS, transform2} from "../crs/TransformUtils";
+import TransformGeoJSON from "../crs/TransformGeoJSON";
 
 export let ShapeOptions = {
   error: {
@@ -29,7 +30,7 @@ export let ShapeEvent = {
 };
 
 
-export default GeoJSON.extend({
+export default TransformGeoJSON.extend({
 
   options: {
     ...ShapeOptions,
@@ -41,13 +42,11 @@ export default GeoJSON.extend({
 
   initialize: function (file, options) {
     this.id = uuid();
-    if (options.originCRS !== options.crs) {
-      options.coordsToLatLng = this._coordsToLatLng.bind(this);
-    }
     Util.setOptions(this, options);
     if (options && options.file) {
       this.fileInfo = {...options.file};
     }
+    this._initTransform(this.options);
     GeoJSON.prototype.initialize.call(this, {
       features: []
     }, this.options);
@@ -85,7 +84,7 @@ export default GeoJSON.extend({
       this.loadLocalFile(file)
     } else if (typeof file === 'string') {
       shp(file).then(function (data) {
-        self.addData(data);
+        self._addGeoData(data);
         self.fire(ShapeEvent.loaded, self)
       }).catch(e => {
         console.log('shp load error ', e);
@@ -118,10 +117,10 @@ export default GeoJSON.extend({
     let error = this.options.error;
     switch (ext) {
       case 'shp':
-        this.addData(this._loadShpByteArray(shp.parseShp(buffer)));
+        this._addGeoData(this._loadShpByteArray(shp.parseShp(buffer)));
         break;
       case 'zip':
-        this.addData(shp.parseZip(buffer));
+        this._addGeoData(shp.parseZip(buffer));
         break;
       default:
         throw new Error(error.type);
@@ -145,5 +144,5 @@ export default GeoJSON.extend({
   },
   _fireError(message) {
     this.fire(ShapeEvent.error, {message})
-  }
+  },
 })

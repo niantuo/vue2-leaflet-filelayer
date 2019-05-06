@@ -13,7 +13,7 @@ proj4.defs("EPSG:2343", "+proj=tmerc +lat_0=0 +lon_0=105 +k=1 +x_0=500000 +y_0=0
 /**
  * 自定义的一些坐标系
  */
-var CRS_DEFS = {
+const CRS_DEFS = {
   EPSG234: 'EPSG:2343',
   WGS84: 'WGS84'
 };

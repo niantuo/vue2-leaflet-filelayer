@@ -7,6 +7,7 @@
 import {GeoJSON, Util} from 'leaflet'
 import toGeoJSON from 'togeojson'
 import uuid from 'uuid'
+import TransformGeoJSON from "../crs/TransformGeoJSON";
 
 export const FileLoaderError = {
   parameter: '未发现文件！',
@@ -22,15 +23,18 @@ export const FileLoaderEvent = {
   loaded: 'data:loaded'
 };
 
-let FileLoaderLayer = GeoJSON.extend({
+let FileLoaderLayer = TransformGeoJSON.extend({
   options: {
     fileSizeLimit: 1024,
     error: FileLoaderError
   },
   fileInfo: {filename: undefined, format: undefined},
+
   initialize: function (options) {
     this.id = uuid();
     Util.setOptions(this, options);
+    this._initTransform(this.options);
+
     this._parsers = {
       geojson: this._loadGeoJSON,
       json: this._loadGeoJSON,
@@ -168,8 +172,7 @@ let FileLoaderLayer = GeoJSON.extend({
     if (typeof content === 'string') {
       content = JSON.parse(content);
     }
-    this.addData(content);
-
+    this._addGeoData(content);
     if (this.getLayers().length === 0) {
       throw new Error(this.options.error.noLayers);
     }
@@ -188,6 +191,7 @@ let FileLoaderLayer = GeoJSON.extend({
   _fireEvent(type, errMsg) {
     this.fire(type, {message: errMsg, layer: this});
   }
+
 });
 
 

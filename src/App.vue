@@ -2,7 +2,7 @@
   <div id="app">
     <LMap ref="lMap" :options="options" :center="options.center"
           @leaflet:load="onReady" class="map-container">
-      <file-loader-control @loaded="onLoad" :file-size-limit="2048" :layer-options="layerOptions"></file-loader-control>
+      <file-loader-control @loaded="onLoad" :file-size-limit="40960" :layer-options="layerOptions"></file-loader-control>
       <LControlZoom></LControlZoom>
       <!--<q-shape-layer :file="fileUrl"></q-shape-layer>-->
     </LMap>
