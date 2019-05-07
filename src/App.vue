@@ -2,9 +2,11 @@
   <div id="app">
     <LMap ref="lMap" :options="options" :center="options.center"
           @leaflet:load="onReady" class="map-container">
-      <file-loader-control @loaded="onLoad" :file-size-limit="40960" :layer-options="layerOptions"></file-loader-control>
+      <file-loader-control @loaded="onLoad" :file-size-limit="40960"
+                           :layer-options="layerOptions"></file-loader-control>
       <LControlZoom></LControlZoom>
       <!--<q-shape-layer :file="fileUrl"></q-shape-layer>-->
+      <proj-geo-layer :content="testJson"></proj-geo-layer>
     </LMap>
   </div>
 </template>
@@ -12,16 +14,19 @@
 <script>
   import 'leaflet/dist/leaflet.css'
   import {LMap} from 'vue2-leaflet'
-  import {tileLayer,CRS} from 'leaflet'
+  import {tileLayer} from 'leaflet'
   import LControlZoom from "vue2-leaflet/src/components/LControlZoom";
   import QShapeLayer from "./components/QShapeLayer";
   import FileLoaderControl from "./components/FileLoaderControl";
   import {CRS_DEFS, WGS842XiAn1980, xiAn2WGS84} from "./crs/TransformUtils";
+  import jsonData from '../data/json1'
+  import ProjGeoLayer from "./components/ProjGeoLayer";
 
 
   export default {
     name: 'App',
     components: {
+      ProjGeoLayer,
       FileLoaderControl,
       QShapeLayer,
       LControlZoom,
@@ -43,7 +48,8 @@
         fileUrl: 'http://calvinmetcalf.github.io/leaflet.shapefile/congress.zip',
         layerOptions: {
           fromCRS: CRS_DEFS.EPSG234
-        }
+        },
+        testJson: jsonData
       }
     },
     methods: {
@@ -70,7 +76,7 @@
       let targetPoint = xiAn2WGS84(point);
 
 
-      console.log('targetPoint: ', targetPoint,WGS842XiAn1980(targetPoint));
+      console.log('targetPoint: ', targetPoint, WGS842XiAn1980(targetPoint));
 
     },
     mounted() {

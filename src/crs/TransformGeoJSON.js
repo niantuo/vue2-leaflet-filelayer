@@ -11,7 +11,7 @@ import {GeoJSON, LatLng} from "leaflet";
 export default GeoJSON.extend({
   options: {
     crs: CRS_DEFS.WGS84,
-    fromCRS:CRS_DEFS.WGS84
+    fromCRS: CRS_DEFS.WGS84
   },
   _coordsToLatLng(fromCRS, toCRS, coords) {
     let point = transform2(fromCRS, toCRS, coords);
@@ -19,15 +19,16 @@ export default GeoJSON.extend({
   },
 
   _initTransform(options) {
-    console.log('_initTransform=>',options);
+    console.log('_initTransform=>', options);
     let {fromCRS, crs} = options;
     if (fromCRS !== crs) {
-      options.coordsToLatLng = this._coordsToLatLng.bind(this,fromCRS, crs);
+      options.coordsToLatLng = this._coordsToLatLng.bind(this, fromCRS, crs);
     } else {
       delete options.coordsToLatLng
     }
   },
   _addGeoData(data) {
+    if (!data) return;
     let crs = data.crs;
     if (crs) {
       let propName = crs.type;
