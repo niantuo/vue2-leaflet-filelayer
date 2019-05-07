@@ -181,8 +181,13 @@
       propsBinder(this, this.mapObject, this.$options.props);
       this.parentContainer = findRealParent(this.$parent);
       this.mapObject.setElement(this.$el);
-      this.mapObject.addTo(this.lMap);
-      this.featureGroup.addTo(this.lMap);
+      if (this.lMap){
+        this.mapObject.addTo(this.lMap);
+        this.featureGroup.addTo(this.lMap);
+      } else {
+        this.mapObject.addTo(this.parentContainer.mapObject);
+        this.featureGroup.addTo(this.parentContainer.mapObject);
+      }
       this.ready = true;
       this.$emit('ready', this.featureGroup);
     },
@@ -190,7 +195,9 @@
       this.clearAll();
     },
     created() {
-      this.lMap = this.getLMap();
+      if (this.getLMap){
+        this.lMap = this.getLMap();
+      }
     }
   }
 </script>

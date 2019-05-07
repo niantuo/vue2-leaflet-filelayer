@@ -18745,8 +18745,13 @@ var script = {
     propsBinder(this, this.mapObject, this.$options.props);
     this.parentContainer = findRealParent(this.$parent);
     this.mapObject.setElement(this.$el);
-    this.mapObject.addTo(this.lMap);
-    this.featureGroup.addTo(this.lMap);
+    if (this.lMap){
+      this.mapObject.addTo(this.lMap);
+      this.featureGroup.addTo(this.lMap);
+    } else {
+      this.mapObject.addTo(this.parentContainer.mapObject);
+      this.featureGroup.addTo(this.parentContainer.mapObject);
+    }
     this.ready = true;
     this.$emit('ready', this.featureGroup);
   },
@@ -18754,7 +18759,9 @@ var script = {
     this.clearAll();
   },
   created: function created() {
-    this.lMap = this.getLMap();
+    if (this.getLMap){
+      this.lMap = this.getLMap();
+    }
   }
 };
 
@@ -18903,11 +18910,11 @@ var __vue_staticRenderFns__ = [];
   /* style */
   var __vue_inject_styles__ = function (inject) {
     if (!inject) { return }
-    inject("data-v-3480a544_0", { source: ".file-loader-control[data-v-3480a544]{position:relative}.file-loader-button[data-v-3480a544]{font-size:10px}", map: undefined, media: undefined });
+    inject("data-v-d1fa9fc2_0", { source: ".file-loader-control[data-v-d1fa9fc2]{position:relative}.file-loader-button[data-v-d1fa9fc2]{font-size:10px}", map: undefined, media: undefined });
 
   };
   /* scoped */
-  var __vue_scope_id__ = "data-v-3480a544";
+  var __vue_scope_id__ = "data-v-d1fa9fc2";
   /* module identifier */
   var __vue_module_identifier__ = undefined;
   /* functional template */
