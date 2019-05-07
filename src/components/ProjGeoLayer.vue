@@ -4,6 +4,7 @@
   import {findRealParent} from 'vue2-leaflet/dist/utils/utils'
   import {CRS_DEFS} from "../crs/TransformUtils";
   import ProjGeoJSON from "../layer/ProjGeoJSON";
+  import {Bounds} from 'leaflet'
 
   export default {
     name: "ProjGeoLayer",
@@ -28,17 +29,19 @@
         type: String,
         default: CRS_DEFS.WGS84
       },
-      fitBounds:{
-        type:Boolean,
-        default:true
+      fitBounds: {
+        type: Boolean,
+        default: true
       }
     },
     methods: {
-      fitToLayerBounds(){
+      fitToLayerBounds() {
         if (!this.fitBounds) return;
         let bounds = this.mapObject.getBounds();
-        let map = this.mapObject._map;
-        map&&bounds&&map.fitBounds(bounds);
+        if (bounds && bounds.isValid && bounds.isValid()) {
+          let map = this.mapObject._map;
+          map && map.fitBounds(bounds);
+        }
       }
     },
     watch: {
