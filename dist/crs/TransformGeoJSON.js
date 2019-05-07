@@ -43,10 +43,10 @@ var TransformGeoJSON = GeoJSON.extend({
 
   _initTransform: function _initTransform(options) {
     console.log('_initTransform=>',options);
-    var originCRS = options.originCRS;
+    var fromCRS = options.fromCRS;
     var crs = options.crs;
-    if (originCRS !== crs) {
-      options.coordsToLatLng = this._coordsToLatLng.bind(this,originCRS, crs);
+    if (fromCRS !== crs) {
+      options.coordsToLatLng = this._coordsToLatLng.bind(this,fromCRS, crs);
     } else {
       delete options.coordsToLatLng;
     }

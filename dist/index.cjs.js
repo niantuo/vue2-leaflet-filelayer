@@ -51,10 +51,10 @@ var TransformGeoJSON = leaflet.GeoJSON.extend({
 
   _initTransform: function _initTransform(options) {
     console.log('_initTransform=>',options);
-    var originCRS = options.originCRS;
+    var fromCRS = options.fromCRS;
     var crs = options.crs;
-    if (originCRS !== crs) {
-      options.coordsToLatLng = this._coordsToLatLng.bind(this,originCRS, crs);
+    if (fromCRS !== crs) {
+      options.coordsToLatLng = this._coordsToLatLng.bind(this,fromCRS, crs);
     } else {
       delete options.coordsToLatLng;
     }
@@ -18355,9 +18355,8 @@ var ShapeOptions = {
   },
   ext: undefined,
   params: undefined,
-  originCRS: CRS_DEFS.WGS84,
+  fromCRS: CRS_DEFS.WGS84,
   crs: CRS_DEFS.WGS84
-
 };
 
 var ShapeEvent = {
@@ -18390,13 +18389,6 @@ var ShapeLayer = TransformGeoJSON.extend({
     }
   },
 
-  _coordsToLatLng: function _coordsToLatLng(coords) {
-    var ref = this.options;
-    var originCRS = ref.originCRS;
-    var crs = ref.crs;
-    var point = transform2(originCRS, crs, coords);
-    return new leaflet.LatLng(point[1], point[0]);
-  },
 
   addFileData: function (file) {
     var this$1 = this;
@@ -18909,11 +18901,11 @@ var __vue_staticRenderFns__ = [];
   /* style */
   var __vue_inject_styles__ = function (inject) {
     if (!inject) { return }
-    inject("data-v-259b07fa_0", { source: ".file-loader-control[data-v-259b07fa]{position:relative}.file-loader-button[data-v-259b07fa]{font-size:10px}", map: undefined, media: undefined });
+    inject("data-v-4b3f4564_0", { source: ".file-loader-control[data-v-4b3f4564]{position:relative}.file-loader-button[data-v-4b3f4564]{font-size:10px}", map: undefined, media: undefined });
 
   };
   /* scoped */
-  var __vue_scope_id__ = "data-v-259b07fa";
+  var __vue_scope_id__ = "data-v-4b3f4564";
   /* module identifier */
   var __vue_module_identifier__ = undefined;
   /* functional template */
@@ -19077,7 +19069,7 @@ var script$1 = {
         ext: this.ext,
         params: this.params,
         name: this.name,
-        originCRS: this.originCRS,
+        fromCRS: this.originCRS,
         crs: this.crs});
       this.mapObject = new ShapeLayer(this.file, options);
       leaflet.DomEvent.on(this.mapObject, ShapeEvent.error, this.onLoadError.bind(this));
@@ -19152,7 +19144,7 @@ var __vue_staticRenderFns__$1 = [];
   /* style */
   var __vue_inject_styles__$1 = undefined;
   /* scoped */
-  var __vue_scope_id__$1 = "data-v-10f8a031";
+  var __vue_scope_id__$1 = "data-v-dec15126";
   /* module identifier */
   var __vue_module_identifier__$1 = undefined;
   /* functional template */

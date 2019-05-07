@@ -18122,10 +18122,10 @@ var TransformGeoJSON = GeoJSON.extend({
 
   _initTransform: function _initTransform(options) {
     console.log('_initTransform=>',options);
-    var originCRS = options.originCRS;
+    var fromCRS = options.fromCRS;
     var crs = options.crs;
-    if (originCRS !== crs) {
-      options.coordsToLatLng = this._coordsToLatLng.bind(this,originCRS, crs);
+    if (fromCRS !== crs) {
+      options.coordsToLatLng = this._coordsToLatLng.bind(this,fromCRS, crs);
     } else {
       delete options.coordsToLatLng;
     }
@@ -18156,9 +18156,8 @@ var ShapeOptions = {
   },
   ext: undefined,
   params: undefined,
-  originCRS: CRS_DEFS.WGS84,
+  fromCRS: CRS_DEFS.WGS84,
   crs: CRS_DEFS.WGS84
-
 };
 
 var ShapeEvent = {
@@ -18191,13 +18190,6 @@ var ShapeLayer = TransformGeoJSON.extend({
     }
   },
 
-  _coordsToLatLng: function _coordsToLatLng(coords) {
-    var ref = this.options;
-    var originCRS = ref.originCRS;
-    var crs = ref.crs;
-    var point = transform2(originCRS, crs, coords);
-    return new LatLng(point[1], point[0]);
-  },
 
   addFileData: function (file) {
     var this$1 = this;

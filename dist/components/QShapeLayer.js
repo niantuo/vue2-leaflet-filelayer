@@ -18224,10 +18224,10 @@ var TransformGeoJSON = GeoJSON.extend({
 
   _initTransform: function _initTransform(options) {
     console.log('_initTransform=>',options);
-    var originCRS = options.originCRS;
+    var fromCRS = options.fromCRS;
     var crs = options.crs;
-    if (originCRS !== crs) {
-      options.coordsToLatLng = this._coordsToLatLng.bind(this,originCRS, crs);
+    if (fromCRS !== crs) {
+      options.coordsToLatLng = this._coordsToLatLng.bind(this,fromCRS, crs);
     } else {
       delete options.coordsToLatLng;
     }
@@ -18258,9 +18258,8 @@ var ShapeOptions = {
   },
   ext: undefined,
   params: undefined,
-  originCRS: CRS_DEFS.WGS84,
+  fromCRS: CRS_DEFS.WGS84,
   crs: CRS_DEFS.WGS84
-
 };
 
 var ShapeEvent = {
@@ -18293,13 +18292,6 @@ var ShapeLayer = TransformGeoJSON.extend({
     }
   },
 
-  _coordsToLatLng: function _coordsToLatLng(coords) {
-    var ref = this.options;
-    var originCRS = ref.originCRS;
-    var crs = ref.crs;
-    var point = transform2(originCRS, crs, coords);
-    return new LatLng(point[1], point[0]);
-  },
 
   addFileData: function (file) {
     var this$1 = this;
@@ -18456,7 +18448,7 @@ var script = {
         ext: this.ext,
         params: this.params,
         name: this.name,
-        originCRS: this.originCRS,
+        fromCRS: this.originCRS,
         crs: this.crs});
       this.mapObject = new ShapeLayer(this.file, options);
       DomEvent.on(this.mapObject, ShapeEvent.error, this.onLoadError.bind(this));
@@ -18616,7 +18608,7 @@ var __vue_staticRenderFns__ = [];
   /* style */
   var __vue_inject_styles__ = undefined;
   /* scoped */
-  var __vue_scope_id__ = "data-v-10f8a031";
+  var __vue_scope_id__ = "data-v-dec15126";
   /* module identifier */
   var __vue_module_identifier__ = undefined;
   /* functional template */

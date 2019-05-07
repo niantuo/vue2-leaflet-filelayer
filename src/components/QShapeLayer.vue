@@ -74,7 +74,7 @@
           ext: this.ext,
           params: this.params,
           name: this.name,
-          originCRS: this.originCRS,
+          fromCRS: this.originCRS,
           crs: this.crs
         };
         this.mapObject = new ShapeLayer(this.file, options);

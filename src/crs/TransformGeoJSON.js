@@ -20,9 +20,9 @@ export default GeoJSON.extend({
 
   _initTransform(options) {
     console.log('_initTransform=>',options);
-    let {originCRS, crs} = options;
-    if (originCRS !== crs) {
-      options.coordsToLatLng = this._coordsToLatLng.bind(this,originCRS, crs);
+    let {fromCRS, crs} = options;
+    if (fromCRS !== crs) {
+      options.coordsToLatLng = this._coordsToLatLng.bind(this,fromCRS, crs);
     } else {
       delete options.coordsToLatLng
     }

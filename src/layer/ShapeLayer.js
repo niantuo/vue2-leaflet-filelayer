@@ -18,9 +18,8 @@ export let ShapeOptions = {
   },
   ext: undefined,
   params: undefined,
-  originCRS: CRS_DEFS.WGS84,
+  fromCRS: CRS_DEFS.WGS84,
   crs: CRS_DEFS.WGS84
-
 };
 
 export let ShapeEvent = {
@@ -55,11 +54,6 @@ export default TransformGeoJSON.extend({
     }
   },
 
-  _coordsToLatLng(coords) {
-    let {originCRS, crs} = this.options;
-    let point = transform2(originCRS, crs, coords);
-    return new LatLng(point[1], point[0]);
-  },
 
   addFileData: function (file) {
     if (!file) {

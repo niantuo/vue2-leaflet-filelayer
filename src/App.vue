@@ -42,7 +42,7 @@
         },
         fileUrl: 'http://calvinmetcalf.github.io/leaflet.shapefile/congress.zip',
         layerOptions: {
-          originCRS: CRS_DEFS.EPSG234
+          fromCRS: CRS_DEFS.EPSG234
         }
       }
     },
