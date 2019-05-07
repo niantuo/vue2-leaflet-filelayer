@@ -19225,17 +19225,19 @@ var script$2 = {
       type: String,
       default: CRS_DEFS.WGS84
     },
-    fitBounds:{
-      type:Boolean,
-      default:true
+    fitBounds: {
+      type: Boolean,
+      default: true
     }
   },
   methods: {
-    fitToLayerBounds: function fitToLayerBounds(){
+    fitToLayerBounds: function fitToLayerBounds() {
       if (!this.fitBounds) { return; }
       var bounds = this.mapObject.getBounds();
-      var map = this.mapObject._map;
-      map&&bounds&&map.fitBounds(bounds);
+      if (bounds && bounds.isValid && bounds.isValid()) {
+        var map = this.mapObject._map;
+        map && map.fitBounds(bounds);
+      }
     }
   },
   watch: {
@@ -19267,7 +19269,7 @@ var __vue_script__$2 = script$2;
   /* style */
   var __vue_inject_styles__$2 = undefined;
   /* scoped */
-  var __vue_scope_id__$2 = "data-v-7645baeb";
+  var __vue_scope_id__$2 = "data-v-8157bbfe";
   /* module identifier */
   var __vue_module_identifier__$2 = undefined;
   /* functional template */
