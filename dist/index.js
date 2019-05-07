@@ -10,10 +10,15 @@ import ShapeLayer,{ShapeEvent,ShapeOptions,} from './layer/ShapeLayer'
 import FileLoaderControl from './components/FileLoaderControl'
 import QShapeLayer from './components/QShapeLayer'
 
+import ProjGeoJSON from './layer/ProjGeoJSON'
+import ProjGeoLayer from './components/ProjGeoLayer'
+
 
 export {
   FileLoaderLayer,FileLoaderEvent,FileLoaderError,
   ShapeLayer,ShapeOptions,ShapeEvent,
   QShapeLayer,
-  FileLoaderControl
+  FileLoaderControl,
+  ProjGeoJSON,
+  ProjGeoLayer
 }

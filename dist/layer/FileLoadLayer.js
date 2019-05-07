@@ -36,7 +36,7 @@ function transform2(from, to, point) {
 var TransformGeoJSON = GeoJSON.extend({
   options: {
     crs: CRS_DEFS.WGS84,
-    fromCRS:CRS_DEFS.WGS84
+    fromCRS: CRS_DEFS.WGS84
   },
   _coordsToLatLng: function _coordsToLatLng(fromCRS, toCRS, coords) {
     var point = transform2(fromCRS, toCRS, coords);
@@ -44,16 +44,17 @@ var TransformGeoJSON = GeoJSON.extend({
   },
 
   _initTransform: function _initTransform(options) {
-    console.log('_initTransform=>',options);
+    console.log('_initTransform=>', options);
     var fromCRS = options.fromCRS;
     var crs = options.crs;
     if (fromCRS !== crs) {
-      options.coordsToLatLng = this._coordsToLatLng.bind(this,fromCRS, crs);
+      options.coordsToLatLng = this._coordsToLatLng.bind(this, fromCRS, crs);
     } else {
       delete options.coordsToLatLng;
     }
   },
   _addGeoData: function _addGeoData(data) {
+    if (!data) { return; }
     var crs = data.crs;
     if (crs) {
       var propName = crs.type;
