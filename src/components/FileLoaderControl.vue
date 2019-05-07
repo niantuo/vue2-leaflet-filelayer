@@ -22,6 +22,7 @@
   export default {
     name: "FileLoaderControl",
     mixins: [ControlMixin, Options],
+    inject: ['getLMap'],
     props: {
       position: {
         type: String,
@@ -106,7 +107,7 @@
         }
       },
       loadShpFile(file, ext) {
-        let layer = new ShapeLayer(file,this.layerOptions);
+        let layer = new ShapeLayer(file, this.layerOptions);
         DomEvent.on(layer, ShapeEvent.loaded, this.onLoaded.bind(this, layer));
         DomEvent.on(layer, ShapeEvent.error, this.onLoadError.bind(this, layer));
         DomEvent.on(layer, ShapeEvent.loading, this.onLoading.bind(this, layer));
@@ -180,8 +181,8 @@
       propsBinder(this, this.mapObject, this.$options.props);
       this.parentContainer = findRealParent(this.$parent);
       this.mapObject.setElement(this.$el);
-      this.mapObject.addTo(this.parentContainer.mapObject);
-      this.featureGroup.addTo(this.parentContainer.mapObject);
+      this.mapObject.addTo(this.lMap);
+      this.featureGroup.addTo(this.lMap);
       this.ready = true;
       this.$emit('ready', this.featureGroup);
     },
@@ -189,7 +190,7 @@
       this.clearAll();
     },
     created() {
-
+      this.lMap = this.getLMap();
     }
   }
 </script>

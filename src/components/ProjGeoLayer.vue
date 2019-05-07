@@ -4,7 +4,6 @@
   import {findRealParent} from 'vue2-leaflet/dist/utils/utils'
   import {CRS_DEFS} from "../crs/TransformUtils";
   import ProjGeoJSON from "../layer/ProjGeoJSON";
-  import {Bounds} from 'leaflet'
 
   export default {
     name: "ProjGeoLayer",

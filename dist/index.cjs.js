@@ -18590,6 +18590,7 @@ var findRealParent = function (firstVueParent) {
 var script = {
   name: "FileLoaderControl",
   mixins: [Control, Options],
+  inject: ['getLMap'],
   props: {
     position: {
       type: String,
@@ -18674,7 +18675,7 @@ var script = {
       }
     },
     loadShpFile: function loadShpFile(file, ext) {
-      var layer = new ShapeLayer(file,this.layerOptions);
+      var layer = new ShapeLayer(file, this.layerOptions);
       leaflet.DomEvent.on(layer, ShapeEvent.loaded, this.onLoaded.bind(this, layer));
       leaflet.DomEvent.on(layer, ShapeEvent.error, this.onLoadError.bind(this, layer));
       leaflet.DomEvent.on(layer, ShapeEvent.loading, this.onLoading.bind(this, layer));
@@ -18744,8 +18745,8 @@ var script = {
     propsBinder(this, this.mapObject, this.$options.props);
     this.parentContainer = findRealParent(this.$parent);
     this.mapObject.setElement(this.$el);
-    this.mapObject.addTo(this.parentContainer.mapObject);
-    this.featureGroup.addTo(this.parentContainer.mapObject);
+    this.mapObject.addTo(this.lMap);
+    this.featureGroup.addTo(this.lMap);
     this.ready = true;
     this.$emit('ready', this.featureGroup);
   },
@@ -18753,7 +18754,7 @@ var script = {
     this.clearAll();
   },
   created: function created() {
-
+    this.lMap = this.getLMap();
   }
 };
 
@@ -18902,11 +18903,11 @@ var __vue_staticRenderFns__ = [];
   /* style */
   var __vue_inject_styles__ = function (inject) {
     if (!inject) { return }
-    inject("data-v-4b3f4564_0", { source: ".file-loader-control[data-v-4b3f4564]{position:relative}.file-loader-button[data-v-4b3f4564]{font-size:10px}", map: undefined, media: undefined });
+    inject("data-v-3480a544_0", { source: ".file-loader-control[data-v-3480a544]{position:relative}.file-loader-button[data-v-3480a544]{font-size:10px}", map: undefined, media: undefined });
 
   };
   /* scoped */
-  var __vue_scope_id__ = "data-v-4b3f4564";
+  var __vue_scope_id__ = "data-v-3480a544";
   /* module identifier */
   var __vue_module_identifier__ = undefined;
   /* functional template */
@@ -19269,7 +19270,7 @@ var __vue_script__$2 = script$2;
   /* style */
   var __vue_inject_styles__$2 = undefined;
   /* scoped */
-  var __vue_scope_id__$2 = "data-v-8157bbfe";
+  var __vue_scope_id__$2 = "data-v-011b5d4c";
   /* module identifier */
   var __vue_module_identifier__$2 = undefined;
   /* functional template */
